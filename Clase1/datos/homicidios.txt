@@ -1,0 +1,62 @@
+﻿﻿Localidad	Total
+Antonio Nariño	 10 
+Antonio Nariño	 2 
+Antonio Nariño	 12 
+Barrios Unidos	 7 
+Barrios Unidos	 3 
+Barrios Unidos	 10 
+Bosa	 120 
+Bosa	 6 
+Bosa	 126 
+Chapinero	 6 
+Chapinero	 4 
+Chapinero	 10 
+Ciudad Bolivar	 195 
+Ciudad Bolivar	 20 
+Ciudad Bolivar	 215 
+Engativa	 66 
+Engativa	 5 
+Engativa	 71 
+Fontibon	 19 
+Fontibon	 1 
+Fontibon	 20 
+Kennedy	 111 
+Kennedy	 12 
+Kennedy	 123 
+La Candelaria	 5 
+La Candelaria	 1 
+La Candelaria	 6 
+Los Martires	 51 
+Los Martires	 6 
+Los Martires	 57 
+Puente Aranda	 22 
+Puente Aranda	 6 
+Puente Aranda	 28 
+Rafael Uribe Uribe	 99 
+Rafael Uribe Uribe	 8 
+Rafael Uribe Uribe	 107 
+San Cristobal	 66 
+San Cristobal	 8 
+San Cristobal	 74 
+Santa fe	 35 
+Santa fe	 5 
+Santa fe	 40 
+Suba	 79 
+Suba	 14 
+Suba	 93 
+Teusaquillo	 7 
+Teusaquillo	 - 
+Teusaquillo	 7 
+Tunjuelito	 27 
+Tunjuelito	 3 
+Tunjuelito	 30 
+Usaquen	 36 
+Usaquen	 1 
+Usaquen	 37 
+Usme	 78 
+Usme	 5 
+Usme	 83 
+Sin información	 1 
+Sin información	 - 
+Sin información	 1 
+CIFRA	 1150 
