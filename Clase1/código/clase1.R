@@ -28,6 +28,7 @@ homicidios$Total <- as.numeric(homicidios$Total)
 
 
 # Utilizar tidyverse
+install.packages("tidyverse")
 library(tidyverse)
 
 
@@ -51,7 +52,7 @@ ggplot(data = homicidios_fix) +
   coord_flip()
 
 # Gráfico interactivo
-#install.packages("esquisse")
+install.packages("esquisse")
 library(esquisse)
 esquisser(homicidios_fix)
 
