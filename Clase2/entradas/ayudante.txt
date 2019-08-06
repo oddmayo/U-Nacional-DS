@@ -1,0 +1,69 @@
+1)
+# Función que contruí para preprocesamiento de texto
+preproctext <- function(x){
+  require(magrittr)
+  x[which(is.na(x))] <- ""
+  y <- x %>%
+    # Quitar tildes
+    iconv(.,from="utf-8",to="ASCII//TRANSLIT") %>%
+    # Quitar caracteres especiales
+    gsub("[^[:print:]]", " ", .) %>%
+    # Pasar todo a minúsculas
+    tolower %>%
+    # Quitar números, símbolos y puntuación
+    gsub("[^[:lower:]^[:space:]]", " ", .) %>%
+    # Dejar solo un espacio entre caracteres
+    gsub("[[:space:]]{1,}", " ", .) %>%
+    # Quitar espacios sobrantes
+    trimws
+  return(y)
+}
+
+2)
+# Función para remover stopwords
+RemoveStopwordsFromText <- function(texto, # texto
+                                    swords # términos a remover
+){
+  sapply(texto, function(x){
+    y <- strsplit(x," ",T)[[1]]
+    paste(y[!(y%in%swords)],collapse=" ")
+  }, USE.NAMES = FALSE
+  )
+}
+
+3)
+# Lollipop chart
+ggplot(as.data.frame(lista_palabras[1:20]), aes(x=reorder(lista_palabras,Freq), y=Freq, label = Freq, color = lista_palabras)) +
+  geom_point(size=3) +
+  geom_segment(aes(x=lista_palabras,
+                   xend=lista_palabras,
+                   y=0,
+                   yend=Freq)) +
+  labs(title="Lollipop Chart",
+       subtitle="Palabras más frecuentes en CONPES de Big Data",
+       caption="fuente: CONPES 3920") +
+  coord_flip() +
+  theme_minimal() +
+  geom_text(nudge_y = 35) +
+  theme(panel.grid = element_blank(),legend.position = "none")
+
+4)
+# Blue palette
+custom_colors <- c("#005073", "#107dac", "#189ad3", "#1ebbd7", "#71c7ec")
+
+# Con más esmero
+wordcloud2(lista_palabras[1:100],
+           color=rep_len( custom_colors, nrow(lista_palabras[1:100])),backgroundColor = "white",shape = 'circle')
+
+5)
+set.seed(11234)
+a <- grid::arrow(type = 'closed', length = unit(.15, "inches"))
+#x11()
+ggraph(bigram_graph, layout = "fr") +
+  geom_edge_link(aes(edge_alpha = n), show.legend = F,
+                 arrow = a,linemitre = 8, end_cap = circle(.07, 'inches')) +
+  geom_node_point(color = "firebrick3", size = 5) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  ggtitle('Red de bigramas más utilizados en CONPES 3920') +
+  theme_void() +
+  theme(plot.title=element_text(hjust=0.5))
