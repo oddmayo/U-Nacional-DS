@@ -109,6 +109,7 @@ ggplot(as.data.frame(lista_palabras[1:20]), aes(x=reorder(lista_palabras,Freq), 
 # Nube de palabras #
 #------------------#
 
+library(wordcloud2)
 # Nube
 wordcloud2(lista_palabras[1:100])
 
@@ -168,4 +169,5 @@ ggraph(bigram_graph, layout = "fr") +
   theme(plot.title=element_text(hjust=0.5))
 
 
-
+# Guardar texto
+save(texto_limpio, file = "texto_limpio.RData")
