@@ -69,6 +69,8 @@ texto_preprocesado <- as.character(sapply(texto_crudo, function(x) preproctext(x
 
 # Remover stopwords
 texto_limpio <- as.character(sapply(texto_preprocesado, function(x) RemoveStopwordsFromText(x,all_stopwords)))
+# Guardar texto
+save(texto_limpio, file = "texto_limpio.RData")
 
 # Obtener cada caracter del texto - tokenizar
 lista_palabras <- unlist(strsplit(texto_limpio, split = ' ',fixed = T))
@@ -88,7 +90,7 @@ primeras <- lista_palabras[1:20]
 
 # Graficar
 library(esquisse)
-esquisser(as.data.frame(primeras))
+#esquisser(as.data.frame(primeras))
 
 # Lollipop chart
 ggplot(as.data.frame(lista_palabras[1:20]), aes(x=reorder(lista_palabras,Freq), y=Freq, label = Freq, color = lista_palabras)) +
@@ -111,14 +113,14 @@ ggplot(as.data.frame(lista_palabras[1:20]), aes(x=reorder(lista_palabras,Freq), 
 
 library(wordcloud2)
 # Nube
-wordcloud2(lista_palabras[1:100])
+#wordcloud2(lista_palabras[1:100])
 
 # Blue palette - colores personalizables con código hexadecimal
 custom_colors <- c("#005073", "#107dac", "#189ad3", "#1ebbd7", "#71c7ec")
 
 # Con más esmero
-wordcloud2(lista_palabras[1:100],
-           color=rep_len( custom_colors, nrow(lista_palabras[1:100])),backgroundColor = "white",shape = 'circle')
+# wordcloud2(lista_palabras[1:100],
+#            color=rep_len( custom_colors, nrow(lista_palabras[1:100])),backgroundColor = "white",shape = 'circle')
 
 
 #---------------------------------#
@@ -168,6 +170,3 @@ ggraph(bigram_graph, layout = "fr") +
   theme_void() +
   theme(plot.title=element_text(hjust=0.5))
 
-
-# Guardar texto
-save(texto_limpio, file = "texto_limpio.RData")
