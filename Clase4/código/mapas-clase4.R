@@ -1,7 +1,10 @@
+# Instalar paquetes
 install.packages(c("tidyverse","sf","maps","tmap","mapview","gifski","devtools"))
+# Cargar paquetes
 paquetes <- c("tidyverse","sf","maps","tmap","mapview","gifski","devtools")
 lapply(paquetes, require, character.only = TRUE)
 
+# Cargo base de homicidios por localidad
 homicidios <- read.csv(file = "https://github.com/FoxHound112263/DS-Training-DAFP/raw/master/data/homicidios.txt",sep = "\t",fileEncoding = "UTF-8",encoding = "UTF-8")
 
 # Convertir a texto
@@ -18,11 +21,6 @@ homicidios$Total[homicidios$Total == " - "] <- 0
 
 # Convertir en numérico
 homicidios$Total <- as.numeric(homicidios$Total)
-
-
-# Utilizar tidyverse
-#install.packages("tidyverse")
-library(tidyverse)
 
 
 # Operador de tubo
@@ -44,9 +42,7 @@ homicidios_fix <- homicidios_fix[-nrow(homicidios_fix),]
 # Mapas #
 #-------#
 
-# Paquete para tratar con datos espaciales
-install.packages("sf")
-library(sf)
+
 
 # geojson con localidades de Bogotá
 localidades <- st_read('https://github.com/FoxHound112263/DS-Training-DAFP/raw/master/data/bta_localidades.json')
@@ -55,19 +51,22 @@ names(localidades)
 
 localidades$NOMBRE
 
+install.packages("ggplot2")
+library(ggplot2)
 # Mapa rápido
 ggplot(localidades) + 
   geom_sf()
-
 
 # Mapa con relleno
 ggplot(localidades) +
   geom_sf(aes(fill = NOMBRE))
 
+# Generar variable categórica para el mapa
 # Agregar datos a localidades
 nueva_columna <- c("Norte", "Sur", "Sur", "Norte", "Norte", "Sur", "Centro", "Occidente", "Sur", "Sur", "Norte", "Norte", "Norte", "Sur", "Sur","Sur","Sur", "Centro", "Sur", "Sur")
 
 # Crear nueva columna
+library(tidyverse)
 localidades <- mutate(localidades, ubicación = nueva_columna)
 
 # En el mapa
@@ -90,8 +89,11 @@ homicidios_fix <-  homicidios_fix[order(match(homicidios_fix$Localidad,localidad
 
 # Colorear por homicidios
 ggplot(localidades) +
+  # Rellenar por número de homicidios
   geom_sf(aes(fill = homicidios_fix$Total)) +
+  # Colorear
   scale_fill_distiller(palette = "Spectral") +
+  # Mostrar localidades en mapa
   geom_sf_text(aes(label = substr(NOMBRE, start = 1, stop = 3)),size = 2.5)
 
 
@@ -109,12 +111,10 @@ ggplot(homicidios_fix) +
   # Fondo y panel blanco
   theme(panel.grid = element_blank(), panel.background = element_blank())
 
-#esquisse::esquisser(homicidios_fix)
-
 
 # Graficar con latitudes y longitudes
-install.packages("maps")
 library(maps)
+
 # Mapa mundial rápido
 mundo <- map_data(map = "world")
 
@@ -122,13 +122,17 @@ ggplot(data = mundo,mapping = aes(x = long,y=lat,group=group))+
   geom_polygon(fill='white',color='black') +
   coord_quickmap()
 
+# Relleno cada país con un color
 ggplot(data = mundo,mapping = aes(x = long,y=lat,group=group))+
   geom_polygon(fill=mundo$group,color='black')
 
 
 # Sacar mapa de Colombia
+install.packages("dplyr")
+library(dplyr)
 colombia <- mundo %>% filter(region == "Colombia")
 
+# Gráfico de Colombia vacío
 ggplot(data = colombia,mapping = aes(x = long,y=lat,group=group))+
   geom_polygon(fill='white',color='black') + 
   coord_quickmap() +
@@ -137,35 +141,38 @@ ggplot(data = colombia,mapping = aes(x = long,y=lat,group=group))+
 ########################################################################
 
 # Cargar shape_file de Colombia
+install.packages("sf")
+library(sf)
 my_sf <- st_read("shape_colombia/depto.shp")
 
-
-
+# Instalar paquete 
 devtools::install_github("nebulae-co/homicidios")
 
 library("homicidios")
-head(homicidios)
 homicidios <-  homicidios::homicidios
 
+# Eliminar columnas inútiles para este ejercicio
 homicidios$id <- NULL
 homicidios$municipio <- NULL
 homicidios$id_depto <- NULL
+
 my_sf$DPTO <- NULL
 
-library(dplyr)
-homicidios_2013 <- homicidios %>% filter(año == 2000) %>% 
-  group_by(depto) %>% 
-  summarise_(poblacion = sum(poblacion),
-             tasa = sum(tasa),
-             homicidios = sum(homicidios))
+# library(dplyr)
+# homicidios_2013 <- homicidios %>% filter(año == 2000) %>% 
+#   group_by(depto) %>% 
+#   summarise_(poblacion = sum(poblacion),
+#             tasa = sum(tasa),
+#             homicidios = sum(homicidios))
 
+# Tratar base
 homicidios_2013 <- homicidios %>% filter(as.numeric(año) == 2013)
 homicidios_2013$año <- NULL
 
 homicidios_2013 <- homicidios_2013 %>%  group_by(depto) %>% summarise_all(sum)
 
 
-
+# Emparejar base de homicidios y del mapa
 colnames(homicidios_2013)[1] <- "NOMBRE_DPT"
 
 homicidios_2013$NOMBRE_DPT <- c("AMAZONAS","ANTIOQUIA","ARAUCA","ARCHIPIELAGO DE SAN ANDRES PROVIDENCIA Y SANTA CATALINA",
@@ -177,18 +184,15 @@ homicidios_2013$NOMBRE_DPT <- c("AMAZONAS","ANTIOQUIA","ARAUCA","ARCHIPIELAGO DE
                                 "VAUPES","VICHADA")
 
 
-
-
+# Mapa
 plot(my_sf['NOMBRE_DPT'])
 
-colombia_sf <- full_join(my_sf,homicidios_2013)
-
-
-
-
+# Emparejar ambas bases de datos
+colombia_sf <- full_join(my_sf, homicidios_2013)
+install.packages("tmap")
+library(tmap)
 
 colombia_sf %>% 
-  #filter(!state_ut %in% c("Andaman & Nicobar Islands", "Lakshadweep")) %>% 
   tm_shape() +
   tm_fill(col = "poblacion", title = "No. personas") +
   tm_borders(lwd = 0.5) +
@@ -203,6 +207,7 @@ colombia_sf %>%
   tm_credits("Fuente:\nCenso 2013", position = c("right", "bottom"))
 
 
+# Gráfico de puntos
 colombia_sf %>% 
   tm_shape() +
   tm_polygons() +
@@ -217,9 +222,6 @@ colombia_sf %>%
     legend.position = c("left", "bottom")   
   )
 
-colombia_sf$region <- c("Norte","Norte","Norte","Norte","Norte","Norte","Norte","Norte","Norte","Norte",
-                        "Sur","Sur","Sur","Sur","Sur","Sur","Sur","Sur","Sur","Sur",
-                        "Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro","Centro")
 
 # Interactivo
 
@@ -234,6 +236,7 @@ colombia_sf %>%
 
 install.packages("mapview")
 library(mapview)
+
 mapview(
   colombia_sf,
   zcol = c("NOMBRE_DPT", "poblacion", "homicidios", 
@@ -243,12 +246,17 @@ mapview(
 )
 
 
+
 # Animación
 install.packages("gapminder")
 library(gapminder)
 head(gapminder)
+
 gapminder <-  gapminder::gapminder
 
+install.packages("ggplot2")
+library(ggplot2)
+# Gráfico estático
 p <- ggplot(
   gapminder, 
   aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
@@ -263,6 +271,9 @@ p
 install.packages("gifski")
 library(gifski)
 
+install.packages("gganimate")
+library(gganimate)
+
 p + transition_time(year) +
   labs(title = "Year: {frame_time}")
 
@@ -271,11 +282,12 @@ p + facet_wrap(~continent) +
   transition_time(year) +
   labs(title = "Year: {frame_time}")
 
+# Deje una marca
 p + transition_time(year) +
   labs(title = "Year: {frame_time}") +
   view_follow(fixed_y = TRUE)
 
-# Lel
+# Otro
 p + transition_time(year) +
   labs(title = "Year: {frame_time}") +
   shadow_wake(wake_length = 0.1, alpha = FALSE)
@@ -285,6 +297,7 @@ p + transition_time(year) +
   labs(title = "Year: {frame_time}") +
   shadow_mark(alpha = 0.3, size = 0.5)
 
+####################### Base de datos de pib y life expectancy
 
 # Gráfico de líneas
 p <- ggplot(
@@ -309,3 +322,4 @@ p +
 p + 
   geom_point(aes(group = seq_along(Day))) +
   transition_reveal(Day)
+
