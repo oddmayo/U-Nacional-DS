@@ -5,23 +5,34 @@
 # Para variable categórica
 
 #---------------------#
-# Árboles de decisión #
+# Árboles de decisión # - Búsqueda codiciosa
 #---------------------#
 
-#install.packages("ISLR")
-#install.packages("tree")
-#install.packages("caret")
-#install.packages("adabag")
+# Contiene bases de datos
+install.packages("ISLR")
+# Contiene árboles de decisión
+install.packages("tree")
+# Técnicas de aprendizaje de máquina
+install.packages("caret")
+# Boosting
+install.packages("adabag")
+# Contiene bosques aleatorios
+install.packages("randomForest")
+
+# Cargar paquetes
 library(adabag)
 library(caret)
 library(ISLR)
 library(tree)
+library(randomForest)
 
+# Visualizar datos que tiene ese paquete
 data(package="ISLR")
-carseats<-Carseats
+carseats <- Carseats
 
 names(carseats)
 
+# Graficar un histograma
 hist(carseats$Sales)
 
 # Convertir las ventas en variable binaria / categórica
@@ -46,14 +57,14 @@ text(tree.carseats, pretty = 0)
 # Para hacer ejercicio reproducible
 set.seed(101)
 # Datos de entrenamiento - 250 datos aleatorios de los 400
-train=sample(1:nrow(carseats), 250)
+train = sample(1:nrow(carseats), 250)
 
-# Volver a hacer el fit
+# Volver a hacer el fit para predecir
 tree.carseats = tree(High~.-Sales, carseats, subset=train)
 plot(tree.carseats)
 text(tree.carseats, pretty=0)
 
-# Predecir sobre el conjunto de datos de prueba
+# PREDECIR sobre el conjunto de datos de prueba
 tree.pred = predict(tree.carseats, carseats[-train,], type="class")
 
 # Evaluar error con matriz de confusión
@@ -70,7 +81,7 @@ cv.carseats
 # Graficar
 plot(cv.carseats)
 
-# Prune Tree
+# Podar árbol
 prune.carseats = prune.misclass(tree.carseats, best = 12)
 plot(prune.carseats)
 text(prune.carseats, pretty=0)
@@ -87,11 +98,12 @@ with(carseats[-train,], table(tree.pred, High))
 # Bosque aleatorio #
 #------------------#
 
-# Problema anterior con random forest
+# Problema anterior con bosque aleatorio
 # Fit del modelo
 rf.carseats = randomForest(High~.-Sales, data = carseats[train,])
 rf.carseats
 
+# Predicción con bosque aleatorio
 pred.random = predict(rf.carseats, carseats[-train,])
 
 
@@ -110,7 +122,7 @@ F1 <- (2 * precision * recall) / (precision + recall)
 #----------#
 
 
-BC.adaboost <- boosting(High ~.-Sales,data=carseats[train,],mfinal=200, coeflearn="Freund",boos=FALSE , control=rpart.control(maxdepth=3))
+BC.adaboost <- boosting(High~.-Sales,data=carseats[train,],mfinal=200, coeflearn="Freund",boos=FALSE,control=rpart.control(maxdepth=3))
 predmat <- predict.boosting(BC.adaboost,newdata=carseats[-train,], newmfinal=200)
 
 # Exactitud
@@ -120,6 +132,9 @@ predmat$confusion
 # Precisión
 precision <- posPredValue(as.factor(predmat$class), carseats[-train,]$High, positive="Yes")
 # Recall
-recall <- sensitivity(predmat$class, carseats[-train,]$High, positive="Yes")
+recall <- sensitivity(as.factor(predmat$class), carseats[-train,]$High, positive="Yes")
 # F score
 F1 <- (2 * precision * recall) / (precision + recall)
+
+
+
